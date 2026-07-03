@@ -4,7 +4,7 @@ import os
 from datetime import datetime
 
 app = Flask(__name__)
-app.secret_key = os.environ.get('SECRET_KEY', 'clave-secreta-cambiar')
+app.secret_key = os.environ.get('SECRET_KEY', 'clave-secreta-yaounde-2026')
 
 USUARIO = 'profe'
 CLAVE = 'yaounde2026'
@@ -34,17 +34,18 @@ def login():
             return redirect(url_for('home'))
         error = 'Usuario o clave incorrectos'
     
-    return '''
+    # Usamos .format() y duplicamos { } en CSS para que no choque
+    html = '''
     <html>
     <head>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Login</title>
         <style>
-        body { font-family: Arial; background: #667eea; padding: 20px; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
-      .card { background: white; padding: 30px; border-radius: 12px; width: 100%; max-width: 400px; }
-        input { width: 100%; padding: 12px; margin: 8px 0; border: 2px solid #ddd; border-radius: 8px; }
-        button { width: 100%; padding: 12px; background: #667eea; color: white; border: none; border-radius: 8px; margin-top: 10px; }
-      .error { color: red; text-align: center; margin-top: 10px; }
+        body {{ font-family: Arial; background: #667eea; padding: 20px; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }}
+        .card {{ background: white; padding: 30px; border-radius: 12px; width: 100%; max-width: 400px; }}
+        input {{ width: 100%; padding: 12px; margin: 8px 0; border: 2px solid #ddd; border-radius: 8px; box-sizing: border-box; }}
+        button {{ width: 100%; padding: 12px; background: #667eea; color: white; border: none; border-radius: 8px; margin-top: 10px; font-size: 16px; }}
+        .error {{ color: red; text-align: center; margin-top: 10px; }}
         </style>
     </head>
     <body>
@@ -55,11 +56,13 @@ def login():
                 <input name="clave" type="password" placeholder="Contraseña" required>
                 <button type="submit">Entrar</button>
             </form>
-            <div class="error">%s</div>
+            <div class="error">{error}</div>
         </div>
     </body>
     </html>
-    ''' % error
+    '''.format(error=error)
+    
+    return html
 
 @app.route('/logout')
 def logout():
@@ -79,7 +82,7 @@ def home():
             n2 = float(request.form['n2'])
             n3 = float(request.form['n3'])
             promedio = (n1 + n2 + n3) / 3
-            resultado = "Promedio: %.1f" % promedio
+            resultado = "Promedio: {:.1f}".format(promedio)
             
             conn = sqlite3.connect('notas.db')
             c = conn.cursor()
@@ -90,19 +93,20 @@ def home():
         except:
             resultado = "Error: Completa todos los campos"
     
-    return '''
+    mostrar = '<div style="margin-top:20px;padding:15px;background:#2ed573;color:white;border-radius:8px;text-align:center;">{}</div>'.format(resultado) if resultado else ''
+    
+    html = '''
     <html>
     <head>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Calculadora</title>
         <style>
-        body { font-family: Arial; background: #667eea; padding: 20px; }
-      .card { background: white; padding: 30px; border-radius: 12px; max-width: 600px; margin: 0 auto; }
-      .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        input { width: 100%; padding: 12px; margin: 8px 0; border: 2px solid #ddd; border-radius: 8px; }
-        button { width: 100%; padding: 12px; background: #667eea; color: white; border: none; border-radius: 8px; margin-top: 10px; }
-      .btn-logout { width: auto; padding: 8px 16px; background: #ff4757; }
-      .resultado { margin-top: 20px; padding: 15px; background: #2ed573; color: white; border-radius: 8px; text-align: center; }
+        body {{ font-family: Arial; background: #667eea; padding: 20px; margin: 0; }}
+        .card {{ background: white; padding: 30px; border-radius: 12px; max-width: 600px; margin: 0 auto; }}
+        .header {{ display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }}
+        input {{ width: 100%; padding: 12px; margin: 8px 0; border: 2px solid #ddd; border-radius: 8px; box-sizing: border-box; }}
+        button {{ width: 100%; padding: 12px; background: #667eea; color: white; border: none; border-radius: 8px; margin-top: 10px; font-size: 16px; }}
+        .btn-logout {{ width: auto; padding: 8px 16px; background: #ff4757; }}
         </style>
     </head>
     <body>
@@ -118,12 +122,14 @@ def home():
                 <input name="n3" type="number" step="0.1" placeholder="Nota 3" required>
                 <button type="submit">Calcular y Guardar</button>
             </form>
-            %s
+            {mostrar}
             <p style="text-align:center; margin-top:20px; font-size:12px;">Nivel 4: Login Seguro</p>
         </div>
     </body>
     </html>
-    ''' % ('<div class="resultado">'+resultado+'</div>' if resultado else '')
+    '''.format(mostrar=mostrar)
+    
+    return html
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
