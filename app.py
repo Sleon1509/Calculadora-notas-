@@ -7,9 +7,8 @@ from datetime import datetime
 from functools import wraps
 
 app = Flask(__name__)
-app.secret_key = 'santos-leon-dev-yaounde-2026' # Cambia esto por algo secreto
+app.secret_key = 'santos-leon-dev-yaounde-2026'
 
-# Usuario y clave del profe. CÁMBIALOS
 USUARIO = 'profe'
 CLAVE = 'yaounde2026'
 
@@ -29,7 +28,6 @@ def init_db():
 
 init_db()
 
-# Decorador para proteger rutas
 def login_requerido(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
@@ -108,7 +106,7 @@ def login():
             justify-content: center;
             padding: 20px;
         }}
-      .card {{
+     .card {{
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
             padding: 40px 30px;
@@ -134,12 +132,12 @@ def login():
             cursor: pointer; margin-top: 10px; transition: all 0.3s;
         }}
         button:active {{ transform: scale(0.98); }}
-      .error {{
+     .error {{
             margin-top: 15px; padding: 15px; background: #ff4757; color: white;
             border-radius: 12px; text-align: center; font-weight: 600;
             display: {'block' if error else 'none'};
         }}
-      .footer {{ text-align: center; margin-top: 25px; font-size: 12px; color: #666; }}
+     .footer {{ text-align: center; margin-top: 25px; font-size: 12px; color: #666; }}
         </style>
     </head>
     <body>
@@ -227,4 +225,6 @@ def home():
             <table>
                 <tr><th>Alumno</th><th>N1</th><th>N2</th><th>N3</th><th>Prom</th><th>Fecha</th></tr>
                 {filas}
-            </table
+            </table>
+            <form method="post">
+                <button type="submit" name="borrar" class="btn-borrar">Borrar Historial
