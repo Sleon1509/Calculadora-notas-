@@ -171,28 +171,4 @@ def home():
     if historial:
         filas = ''
         for r in historial:
-            color_fila = '#2ed573' if r[5] >= 10 else '#ff4757'
-            filas += '<tr><td>{}</td><td>{:.1f}</td><td>{:.1f}</td><td>{:.1f}</td><td style="background:{};color:white;font-weight:bold;">{:.1f}</td><td>{}</td></tr>'.format(r[1], r[2], r[3], r[4], color_fila, r[5], r[6])
-        
-        tabla = '''
-        <div style="margin-top:20px;">
-            <h3>Últimos 10 registros 📋</h3>
-            <table style="width:100%;border-collapse:collapse;margin-top:10px;font-size:14px;">
-                <tr style="background:#667eea;color:white;"><th>Alumno</th><th>N1</th><th>N2</th><th>N3</th><th>Prom</th><th>Fecha</th></tr>
-                {}
-            </table>
-            <form method="post">
-                <button type="submit" name="borrar" style="background:#ff4757;margin-top:15px;">Borrar Historial 🗑️</button>
-            </form>
-        </div>
-        '''.format(filas)
-    
-    return '''
-    <html>
-    <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Calculadora de Notas Pro+</title>
-        <style>
-        body {{ font-family: Arial; background: #667eea; padding: 20px; margin: 0; }}
-       .container {{ max-width: 900px; margin: 0 auto; }}
-       .card {{ background: white; padding: 30px; border-radius
+            color_fila = '#2
