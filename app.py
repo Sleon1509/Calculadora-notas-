@@ -12,12 +12,11 @@ CORS(app, supports_credentials=True, origins=[
     "https://react-pxfmwada.stackblitz.io"
 ], expose_headers=["Content-Type", "Set-Cookie"])
 
-app = Flask(__name__)
 app.secret_key = 'cambia-esto-en-produccion'
 app.config['SESSION_COOKIE_SAMESITE'] = 'None'  
 app.config['SESSION_COOKIE_SECURE'] = True
 app.config['SESSION_COOKIE_HTTPONLY'] = True
-CORS(app, supports_credentials=True, origins=["https://stackblitz.com", "https://*.stackblitz.io", "https://*.webcontainer.io"])
+
 
 def init_db():
     conn = sqlite3.connect('database.db')
