@@ -6,8 +6,7 @@ import os
 from datetime import datetime
 from functools import wraps
 
-app = Flask(__name__)
-app.secret_key = 'santos-leon-yaounde-2026-secreto'
+Nniapp.secret_key = 'santos-leon-yaounde-2026-secreto'
 
 USUARIO = 'profe'
 CLAVE = 'yaounde2026'
