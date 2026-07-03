@@ -4,7 +4,13 @@ import sqlite3
 from xhtml2pdf import pisa
 import io
 from functools import wraps
-import os
+from flask_cors import CORS
+
+app = Flask(__name__)
+CORS(app, supports_credentials=True, origins=[
+    "https://stackblitz.com",
+    "https://react-pxfmwada.stackblitz.io"
+], expose_headers=["Content-Type", "Set-Cookie"])
 
 app = Flask(__name__)
 app.secret_key = 'cambia-esto-en-produccion'
