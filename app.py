@@ -38,8 +38,8 @@ def crear_pdf(nombre, n1, n2, n3, promedio):
         <style>
             body {{ font-family: Arial; padding: 40px; }}
             h1 {{ color: #667eea; text-align: center; }}
-           .card {{ border: 2px solid #667eea; padding: 20px; border-radius: 10px; }}
-           .promedio {{ background: {color}; color: white; padding: 15px; text-align: center; font-size: 24px; border-radius: 8px; }}
+          .card {{ border: 2px solid #667eea; padding: 20px; border-radius: 10px; }}
+          .promedio {{ background: {color}; color: white; padding: 15px; text-align: center; font-size: 24px; border-radius: 8px; }}
         </style>
     </head>
     <body>
@@ -89,10 +89,10 @@ def login():
         <title>Login</title>
         <style>
         body {{ font-family: Arial; background: #667eea; padding: 20px; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }}
-       .card {{ background: white; padding: 30px; border-radius: 12px; width: 100%; max-width: 400px; }}
+      .card {{ background: white; padding: 30px; border-radius: 12px; width: 100%; max-width: 400px; }}
         input {{ width: 100%; padding: 12px; margin: 8px 0; border: 2px solid #ddd; border-radius: 8px; box-sizing: border-box; }}
         button {{ width: 100%; padding: 12px; background: #667eea; color: white; border: none; border-radius: 8px; margin-top: 10px; font-size: 16px; }}
-       .error {{ color: red; text-align: center; margin-top: 10px; }}
+      .error {{ color: red; text-align: center; margin-top: 10px; }}
         </style>
     </head>
     <body>
@@ -171,4 +171,65 @@ def home():
     if historial:
         filas = ''
         for r in historial:
-            color_fila = '#2
+            color_fila = '#2ed573' if r[5] >= 10 else '#ff4757'
+            filas += '<tr><td>{}</td><td>{:.1f}</td><td>{:.1f}</td><td>{:.1f}</td><td style="background:{};color:white;font-weight:bold;">{:.1f}</td><td>{}</td></tr>'.format(r[1], r[2], r[3], r[4], color_fila, r[5], r[6])
+        
+        tabla = '''
+        <div style="margin-top:20px;">
+            <h3>Últimos 10 registros 📋</h3>
+            <table style="width:100%;border-collapse:collapse;margin-top:10px;font-size:14px;">
+                <tr style="background:#667eea;color:white;"><th>Alumno</th><th>N1</th><th>N2</th><th>N3</th><th>Prom</th><th>Fecha</th></tr>
+                {}
+            </table>
+            <form method="post">
+                <button type="submit" name="borrar" style="background:#ff4757;margin-top:15px;">Borrar Historial 🗑️</button>
+            </form>
+        </div>
+        '''.format(filas)
+    
+    return '''
+    <html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Calculadora de Notas Pro+</title>
+        <style>
+        body {{ font-family: Arial; background: #667eea; padding: 20px; margin: 0; }}
+      .container {{ max-width: 900px; margin: 0 auto; }}
+      .card {{ background: white; padding: 30px; border-radius: 12px; margin-bottom: 20px; }}
+      .header {{ display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }}
+        input {{ width: 100%; padding: 12px; margin: 8px 0; border: 2px solid #ddd; border-radius: 8px; box-sizing: border-box; }}
+        button {{ width: 100%; padding: 12px; background: #667eea; color: white; border: none; border-radius: 8px; margin-top: 10px; font-size: 16px; cursor: pointer; }}
+      .btn-logout {{ width: auto; padding: 8px 16px; background: #ff4757; }}
+      .btn-pdf {{ background: #2ed573; display: {}; }}
+      .resultado {{ margin-top: 20px; padding: 15px; background: {}; color: white; border-radius: 8px; text-align: center; font-size: 18px; font-weight: bold; }}
+        table th, table td {{ padding: 10px 6px; text-align: center; border-bottom: 1px solid #ddd; }}
+        @media (max-width: 600px) {{ table {{ font-size: 12px; }} }}
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="card">
+                <div class="header">
+                    <h2>Calculadora de Notas Pro+ 📊</h2>
+                    <a href="/logout"><button class="btn-logout">Cerrar Sesión</button></a>
+                </div>
+                <form method="post">
+                    <input name="nombre" placeholder="Nombre del alumno" value="{}" required>
+                    <input name="n1" type="number" step="0.1" min="0" max="20" placeholder="Nota 1" value="{}" required>
+                    <input name="n2" type="number" step="0.1" min="0" max="20" placeholder="Nota 2" value="{}" required>
+                    <input name="n3" type="number" step="0.1" min="0" max="20" placeholder="Nota 3" value="{}" required>
+                    <button type="submit">Calcular y Guardar 💾</button>
+                    <button type="submit" name="pdf" value="1" class="btn-pdf">Descargar PDF 📄</button>
+                </form>
+                {}
+                <p style="text-align:center; margin-top:20px; font-size:12px;">Nivel 5: App Completa | Yaoundé 🇨🇲</p>
+            </div>
+            {}
+        </div>
+    </body>
+    </html>
+    '''.format(mostrar_pdf, color_resultado, nombre if nombre else '', n1 if n1 else '', n2 if n2 else '', n3 if n3 else '', '<div class="resultado">'+resultado+'</div>' if resultado else '', tabla)
+
+if __name__ == '__main__':
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port)
