@@ -36,34 +36,110 @@ def home():
     <html>
     <head>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <style>
-            body {{ 
-                font-family: Arial, sans-serif; 
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                display: flex; justify-content: center; align-items: center; 
-                min-height: 100vh; margin: 0;
-            }}
-            .card {{
-                background: white; padding: 30px; border-radius: 15px; 
-                box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-                width: 90%; max-width: 400px; text-align: center;
-            }}
-            h2 {{ color: #333; margin-bottom: 20px; }}
-            input {{ 
-                width: 100%; padding: 12px; margin: 8px 0; 
-                border: 2px solid #ddd; border-radius: 8px; 
-                font-size: 16px; box-sizing: border-box;
-            }}
-            button {{ 
-                background: #667eea; color: white; padding: 14px; 
-                border: none; border-radius: 8px; width: 100%; 
-                font-size: 18px; font-weight: bold; cursor: pointer; margin-top: 10px;
-            }}
-            .resultado {{ 
-                margin-top: 20px; font-size: 20px; 
-                font-weight: bold; color: {color};
-            }}
-        </style>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.container {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    padding: 40px 30px;
+    border-radius: 24px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    width: 100%;
+    max-width: 400px;
+    animation: slideUp 0.5s ease;
+}
+
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+h1 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 30px;
+    font-weight: 700;
+    font-size: 28px;
+}
+
+input {
+    width: 100%;
+    padding: 15px;
+    margin: 12px 0;
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+    font-size: 16px;
+    transition: all 0.3s;
+    font-family: 'Poppins', sans-serif;
+}
+
+input:focus {
+    outline: none;
+    border-color: #667eea;
+    transform: scale(1.02);
+}
+
+button {
+    width: 100%;
+    padding: 16px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: all 0.3s;
+    font-family: 'Poppins', sans-serif;
+}
+
+button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+}
+
+button:active {
+    transform: translateY(0);
+}
+
+.resultado {
+    margin-top: 25px;
+    padding: 20px;
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    color: white;
+    border-radius: 12px;
+    text-align: center;
+    font-size: 22px;
+    font-weight: 700;
+    animation: pop 0.4s ease;
+}
+
+@keyframes pop {
+    0% { transform: scale(0.8); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+.footer {
+    text-align: center;
+    margin-top: 25px;
+    font-size: 12px;
+    color: #666;
+}
+</style>
     </head>
     <body>
         <div class="card">
