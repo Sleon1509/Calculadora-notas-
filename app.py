@@ -1,12 +1,10 @@
-from flask import Flask, request, make_response, session, redirect, url_for
-from xhtml2pdf import pisa
-from io import BytesIO
+from flask import Flask, request, session, redirect, url_for
 import sqlite3
 import os
 from datetime import datetime
-from functools import wraps
 
-Nniapp.secret_key = 'santos-leon-yaounde-2026-secreto'
+app = Flask(__name__)
+app.secret_key = os.environ.get('SECRET_KEY', 'clave-secreta-cambiar')
 
 USUARIO = 'profe'
 CLAVE = 'yaounde2026'
@@ -27,29 +25,106 @@ def init_db():
 
 init_db()
 
-def login_requerido(f):
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        if 'logueado' not in session:
-            return redirect(url_for('login'))
-        return f(*args, **kwargs)
-    return decorated_function
-
-def crear_pdf(nombre, n1, n2, n3, promedio):
-    color_clase = 'verde' if promedio >= 10 else 'rojo'
-    html = '''
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    error = ''
+    if request.method == 'POST':
+        if request.form['usuario'] == USUARIO and request.form['clave'] == CLAVE:
+            session['logueado'] = True
+            return redirect(url_for('home'))
+        error = 'Usuario o clave incorrectos'
+    
+    return '''
     <html>
     <head>
-        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Login</title>
         <style>
-            body { font-family: Arial; padding: 40px; }
-            h1 { color: #667eea; text-align: center; }
-            .card { border: 2px solid #667eea; padding: 20px; border-radius: 10px; }
-            .verde { background: #2ed573; color: white; padding: 15px; text-align: center; font-size: 24px; }
-            .rojo { background: #ff4757; color: white; padding: 15px; text-align: center; font-size: 24px; }
+        body { font-family: Arial; background: #667eea; padding: 20px; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+      .card { background: white; padding: 30px; border-radius: 12px; width: 100%; max-width: 400px; }
+        input { width: 100%; padding: 12px; margin: 8px 0; border: 2px solid #ddd; border-radius: 8px; }
+        button { width: 100%; padding: 12px; background: #667eea; color: white; border: none; border-radius: 8px; margin-top: 10px; }
+      .error { color: red; text-align: center; margin-top: 10px; }
         </style>
     </head>
     <body>
-        <h1>Reporte de Notas 📊</h1>
         <div class="card">
-            <p><b>Alumno:</b> %s</p>
+            <h2>Login Profes 🔒</h2>
+            <form method="post">
+                <input name="usuario" placeholder="Usuario" required>
+                <input name="clave" type="password" placeholder="Contraseña" required>
+                <button type="submit">Entrar</button>
+            </form>
+            <div class="error">%s</div>
+        </div>
+    </body>
+    </html>
+    ''' % error
+
+@app.route('/logout')
+def logout():
+    session.clear()
+    return redirect(url_for('login'))
+
+@app.route('/', methods=['GET', 'POST'])
+def home():
+    if 'logueado' not in session:
+        return redirect(url_for('login'))
+    
+    resultado = ''
+    if request.method == 'POST':
+        try:
+            nombre = request.form['nombre']
+            n1 = float(request.form['n1'])
+            n2 = float(request.form['n2'])
+            n3 = float(request.form['n3'])
+            promedio = (n1 + n2 + n3) / 3
+            resultado = "Promedio: %.1f" % promedio
+            
+            conn = sqlite3.connect('notas.db')
+            c = conn.cursor()
+            c.execute('INSERT INTO registros (nombre, n1, n2, n3, promedio, fecha) VALUES (?,?,?,?,?,?)',
+                     (nombre, n1, n2, n3, promedio, datetime.now().strftime('%d/%m/%Y %H:%M')))
+            conn.commit()
+            conn.close()
+        except:
+            resultado = "Error: Completa todos los campos"
+    
+    return '''
+    <html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Calculadora</title>
+        <style>
+        body { font-family: Arial; background: #667eea; padding: 20px; }
+      .card { background: white; padding: 30px; border-radius: 12px; max-width: 600px; margin: 0 auto; }
+      .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        input { width: 100%; padding: 12px; margin: 8px 0; border: 2px solid #ddd; border-radius: 8px; }
+        button { width: 100%; padding: 12px; background: #667eea; color: white; border: none; border-radius: 8px; margin-top: 10px; }
+      .btn-logout { width: auto; padding: 8px 16px; background: #ff4757; }
+      .resultado { margin-top: 20px; padding: 15px; background: #2ed573; color: white; border-radius: 8px; text-align: center; }
+        </style>
+    </head>
+    <body>
+        <div class="card">
+            <div class="header">
+                <h2>Calculadora de Notas 📊</h2>
+                <a href="/logout"><button class="btn-logout">Cerrar Sesión</button></a>
+            </div>
+            <form method="post">
+                <input name="nombre" placeholder="Nombre del alumno" required>
+                <input name="n1" type="number" step="0.1" placeholder="Nota 1" required>
+                <input name="n2" type="number" step="0.1" placeholder="Nota 2" required>
+                <input name="n3" type="number" step="0.1" placeholder="Nota 3" required>
+                <button type="submit">Calcular y Guardar</button>
+            </form>
+            %s
+            <p style="text-align:center; margin-top:20px; font-size:12px;">Nivel 4: Login Seguro</p>
+        </div>
+    </body>
+    </html>
+    ''' % ('<div class="resultado">'+resultado+'</div>' if resultado else '')
+
+if __name__ == '__main__':
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port)
